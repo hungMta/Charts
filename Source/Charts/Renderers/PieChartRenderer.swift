@@ -352,6 +352,7 @@ open class PieChartRenderer: DataRenderer
 
             let valueFont = dataSet.valueFont
             let entryLabelFont = dataSet.entryLabelFont ?? chart.entryLabelFont
+            let customFont: NSUIFont = entryLabelFont ?? valueFont
             let lineHeight = valueFont.lineHeight
 
             guard let formatter = dataSet.valueFormatter else { continue }
@@ -396,9 +397,14 @@ open class PieChartRenderer: DataRenderer
                 let drawXInside = drawEntryLabels && xValuePosition == .insideSlice
                 let drawYInside = drawValues && yValuePosition == .insideSlice
 
-                let valueTextColor = j == 0 ? .gray : dataSet.valueTextColorAt(j)
-                let entryLabelColor = j == 0 ? .gray : dataSet.entryLabelColor ?? chart.entryLabelColor
-
+                var valueTextColor = dataSet.valueTextColorAt(j)
+                var entryLabelColor = dataSet.entryLabelColor ?? chart.entryLabelColor
+                if (dataSet.entryForIndex(j) as! PieChartDataEntry).label == "Good"
+                {
+                    valueTextColor = .gray
+                    entryLabelColor = .gray
+                }
+                
                 if drawXOutside || drawYOutside
                 {
                     let valueLineLength1 = dataSet.valueLinePart1Length
@@ -475,7 +481,7 @@ open class PieChartRenderer: DataRenderer
                             text: valueText,
                             point: labelPoint,
                             align: align,
-                            attributes: [NSAttributedString.Key.font: valueFont, NSAttributedString.Key.foregroundColor: valueTextColor])
+                            attributes: [NSAttributedString.Key.font: customFont, NSAttributedString.Key.foregroundColor: valueTextColor])
 
                         if j < data.entryCount && pe?.label != nil
                         {
@@ -485,7 +491,7 @@ open class PieChartRenderer: DataRenderer
                                 point: CGPoint(x: labelPoint.x, y: labelPoint.y + lineHeight),
                                 align: align,
                                 attributes: [
-                                    NSAttributedString.Key.font: entryLabelFont ?? valueFont,
+                                    NSAttributedString.Key.font: customFont,
                                     NSAttributedString.Key.foregroundColor: entryLabelColor ?? valueTextColor,
                                 ])
                         }
@@ -500,7 +506,7 @@ open class PieChartRenderer: DataRenderer
                                 point: CGPoint(x: labelPoint.x, y: labelPoint.y + lineHeight / 2.0),
                                 align: align,
                                 attributes: [
-                                    NSAttributedString.Key.font: entryLabelFont ?? valueFont,
+                                    NSAttributedString.Key.font: customFont,
                                     NSAttributedString.Key.foregroundColor: entryLabelColor ?? valueTextColor,
                                 ])
                         }
@@ -512,7 +518,7 @@ open class PieChartRenderer: DataRenderer
                             text: valueText,
                             point: CGPoint(x: labelPoint.x, y: labelPoint.y + lineHeight / 2.0),
                             align: align,
-                            attributes: [NSAttributedString.Key.font: valueFont, NSAttributedString.Key.foregroundColor: valueTextColor])
+                            attributes: [NSAttributedString.Key.font: customFont, NSAttributedString.Key.foregroundColor: valueTextColor])
                     }
                 }
 
@@ -529,7 +535,7 @@ open class PieChartRenderer: DataRenderer
                             text: valueText,
                             point: CGPoint(x: x, y: y),
                             align: .center,
-                            attributes: [NSAttributedString.Key.font: valueFont, NSAttributedString.Key.foregroundColor: valueTextColor])
+                            attributes: [NSAttributedString.Key.font: customFont, NSAttributedString.Key.foregroundColor: valueTextColor])
 
                         if j < data.entryCount && pe?.label != nil
                         {
@@ -539,7 +545,7 @@ open class PieChartRenderer: DataRenderer
                                 point: CGPoint(x: x, y: y + lineHeight),
                                 align: .center,
                                 attributes: [
-                                    NSAttributedString.Key.font: entryLabelFont ?? valueFont,
+                                    NSAttributedString.Key.font: customFont,
                                     NSAttributedString.Key.foregroundColor: entryLabelColor ?? valueTextColor,
                                 ])
                         }
@@ -554,7 +560,7 @@ open class PieChartRenderer: DataRenderer
                                 point: CGPoint(x: x, y: y + lineHeight / 2.0),
                                 align: .center,
                                 attributes: [
-                                    NSAttributedString.Key.font: entryLabelFont ?? valueFont,
+                                    NSAttributedString.Key.font: customFont,
                                     NSAttributedString.Key.foregroundColor: entryLabelColor ?? valueTextColor,
                                 ])
                         }
@@ -566,7 +572,7 @@ open class PieChartRenderer: DataRenderer
                             text: valueText,
                             point: CGPoint(x: x, y: y + lineHeight / 2.0),
                             align: .center,
-                            attributes: [NSAttributedString.Key.font: valueFont, NSAttributedString.Key.foregroundColor: valueTextColor])
+                            attributes: [NSAttributedString.Key.font: customFont, NSAttributedString.Key.foregroundColor: valueTextColor])
                     }
                 }
 
