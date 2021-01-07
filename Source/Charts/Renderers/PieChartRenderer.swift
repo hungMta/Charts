@@ -9,11 +9,11 @@
 //  https://github.com/danielgindi/Charts
 //
 
-import Foundation
 import CoreGraphics
+import Foundation
 
 #if canImport(UIKit)
-    import UIKit
+import UIKit
 #endif
 
 #if canImport(Cocoa)
@@ -31,7 +31,7 @@ open class PieChartRenderer: DataRenderer
         self.chart = chart
     }
 
-    open override func drawData(context: CGContext)
+    override open func drawData(context: CGContext)
     {
         guard let chart = chart else { return }
 
@@ -97,7 +97,7 @@ open class PieChartRenderer: DataRenderer
         guard
             dataSet.automaticallyDisableSliceSpacing,
             let data = chart?.data as? PieChartData
-            else { return dataSet.sliceSpace }
+        else { return dataSet.sliceSpace }
 
         let spaceSizeRatio = dataSet.sliceSpace / min(viewPortHandler.contentWidth, viewPortHandler.contentHeight)
         let minValueRatio = dataSet.yMin / data.yValueSum * 2.0
@@ -111,7 +111,7 @@ open class PieChartRenderer: DataRenderer
 
     @objc open func drawDataSet(context: CGContext, dataSet: IPieChartDataSet)
     {
-        guard let chart = chart else {return }
+        guard let chart = chart else { return }
 
         var angle: CGFloat = 0.0
         let rotationAngle = chart.rotationAngle
@@ -130,7 +130,7 @@ open class PieChartRenderer: DataRenderer
         for j in 0 ..< entryCount
         {
             guard let e = dataSet.entryForIndex(j) else { continue }
-            if ((abs(e.y) > Double.ulpOfOne))
+            if abs(e.y) > Double.ulpOfOne
             {
                 visibleAngleCount += 1
             }
@@ -148,10 +148,10 @@ open class PieChartRenderer: DataRenderer
         // i.e. We want to VO to say "3 Elements" even if the developer didn't specify an accessibility prefix
         // If prefix is unspecified it is safe to assume they did not want to use "Element 1", so that uses a default empty string
         let prefix: String = chart.data?.accessibilityEntryLabelPrefix ?? "Element"
-        let description = chart.chartDescription?.text ?? dataSet.label ?? chart.centerText ??  "Pie Chart"
+        let description = chart.chartDescription?.text ?? dataSet.label ?? chart.centerText ?? "Pie Chart"
 
         let
-        element = NSUIAccessibilityElement(accessibilityContainer: chart)
+            element = NSUIAccessibilityElement(accessibilityContainer: chart)
         element.accessibilityLabel = description + ". \(entryCount) \(prefix + (entryCount == 1 ? "" : "s"))"
         element.accessibilityFrame = chart.bounds
         element.isHeader = true
@@ -163,7 +163,7 @@ open class PieChartRenderer: DataRenderer
             var innerRadius = userInnerRadius
 
             guard let e = dataSet.entryForIndex(j) else { continue }
-            
+
             defer
             {
                 // From here on, even when skipping (i.e for highlight),
@@ -173,13 +173,13 @@ open class PieChartRenderer: DataRenderer
 
             // draw only if the value is greater than zero
             if abs(e.y) < Double.ulpOfOne { continue }
-            
+
             // Skip if highlighted
-            if dataSet.isHighlightEnabled && chart.needsHighlight(index: j)
+            if dataSet.isHighlightEnabled, chart.needsHighlight(index: j)
             {
                 continue
             }
-        
+
             let accountForSliceSpacing = sliceSpace > 0.0 && sliceAngle <= 180.0
 
             context.setFillColor(dataSet.color(atIndex: j).cgColor)
@@ -204,8 +204,8 @@ open class PieChartRenderer: DataRenderer
 
             path.addRelativeArc(center: center, radius: radius, startAngle: startAngleOuter.DEG2RAD, delta: sweepAngleOuter.DEG2RAD)
 
-            if drawInnerArc &&
-                (innerRadius > 0.0 || accountForSliceSpacing)
+            if drawInnerArc,
+               innerRadius > 0.0 || accountForSliceSpacing
             {
                 if accountForSliceSpacing
                 {
@@ -281,7 +281,7 @@ open class PieChartRenderer: DataRenderer
             let axElement = createAccessibleElement(withIndex: j,
                                                     container: chart,
                                                     dataSet: dataSet)
-            { (element) in
+            { element in
                 element.accessibilityFrame = path.boundingBoxOfPath
             }
 
@@ -294,12 +294,12 @@ open class PieChartRenderer: DataRenderer
         context.restoreGState()
     }
 
-    open override func drawValues(context: CGContext)
+    override open func drawValues(context: CGContext)
     {
         guard
             let chart = chart,
             let data = chart.data
-            else { return }
+        else { return }
 
         let center = chart.centerCircleBox
 
@@ -340,7 +340,7 @@ open class PieChartRenderer: DataRenderer
 
             let drawValues = dataSet.isDrawValuesEnabled
 
-            if !drawValues && !drawEntryLabels && !dataSet.isDrawIconsEnabled
+            if !drawValues, !drawEntryLabels, !dataSet.isDrawIconsEnabled
             {
                 continue
             }
@@ -396,8 +396,8 @@ open class PieChartRenderer: DataRenderer
                 let drawXInside = drawEntryLabels && xValuePosition == .insideSlice
                 let drawYInside = drawValues && yValuePosition == .insideSlice
 
-                let valueTextColor = dataSet.valueTextColorAt(j)
-                let entryLabelColor = dataSet.entryLabelColor ?? chart.entryLabelColor
+                let valueTextColor = j == 0 ? .gray : dataSet.valueTextColorAt(j)
+                let entryLabelColor = j == 0 ? .gray : dataSet.entryLabelColor ?? chart.entryLabelColor
 
                 if drawXOutside || drawYOutside
                 {
@@ -432,7 +432,7 @@ open class PieChartRenderer: DataRenderer
                         x: labelRadius * (1 + valueLineLength1) * sliceXBase + center.x,
                         y: labelRadius * (1 + valueLineLength1) * sliceYBase + center.y)
 
-                    if transformedAngle.truncatingRemainder(dividingBy: 360.0) >= 90.0 && transformedAngle.truncatingRemainder(dividingBy: 360.0) <= 270.0
+                    if transformedAngle.truncatingRemainder(dividingBy: 360.0) >= 90.0, transformedAngle.truncatingRemainder(dividingBy: 360.0) <= 270.0
                     {
                         pt2 = CGPoint(x: pt1.x - polyline2Length, y: pt1.y)
                         align = .right
@@ -467,7 +467,7 @@ open class PieChartRenderer: DataRenderer
 
                         context.drawPath(using: CGPathDrawingMode.stroke)
                     }
-                    
+
                     if drawXOutside && drawYOutside
                     {
                         ChartUtils.drawText(
@@ -475,8 +475,7 @@ open class PieChartRenderer: DataRenderer
                             text: valueText,
                             point: labelPoint,
                             align: align,
-                            attributes: [NSAttributedString.Key.font: valueFont, NSAttributedString.Key.foregroundColor: valueTextColor]
-                        )
+                            attributes: [NSAttributedString.Key.font: valueFont, NSAttributedString.Key.foregroundColor: valueTextColor])
 
                         if j < data.entryCount && pe?.label != nil
                         {
@@ -487,8 +486,8 @@ open class PieChartRenderer: DataRenderer
                                 align: align,
                                 attributes: [
                                     NSAttributedString.Key.font: entryLabelFont ?? valueFont,
-                                    NSAttributedString.Key.foregroundColor: entryLabelColor ?? valueTextColor]
-                            )
+                                    NSAttributedString.Key.foregroundColor: entryLabelColor ?? valueTextColor,
+                                ])
                         }
                     }
                     else if drawXOutside
@@ -502,8 +501,8 @@ open class PieChartRenderer: DataRenderer
                                 align: align,
                                 attributes: [
                                     NSAttributedString.Key.font: entryLabelFont ?? valueFont,
-                                    NSAttributedString.Key.foregroundColor: entryLabelColor ?? valueTextColor]
-                            )
+                                    NSAttributedString.Key.foregroundColor: entryLabelColor ?? valueTextColor,
+                                ])
                         }
                     }
                     else if drawYOutside
@@ -513,8 +512,7 @@ open class PieChartRenderer: DataRenderer
                             text: valueText,
                             point: CGPoint(x: labelPoint.x, y: labelPoint.y + lineHeight / 2.0),
                             align: align,
-                            attributes: [NSAttributedString.Key.font: valueFont, NSAttributedString.Key.foregroundColor: valueTextColor]
-                        )
+                            attributes: [NSAttributedString.Key.font: valueFont, NSAttributedString.Key.foregroundColor: valueTextColor])
                     }
                 }
 
@@ -531,8 +529,7 @@ open class PieChartRenderer: DataRenderer
                             text: valueText,
                             point: CGPoint(x: x, y: y),
                             align: .center,
-                            attributes: [NSAttributedString.Key.font: valueFont, NSAttributedString.Key.foregroundColor: valueTextColor]
-                        )
+                            attributes: [NSAttributedString.Key.font: valueFont, NSAttributedString.Key.foregroundColor: valueTextColor])
 
                         if j < data.entryCount && pe?.label != nil
                         {
@@ -543,8 +540,8 @@ open class PieChartRenderer: DataRenderer
                                 align: .center,
                                 attributes: [
                                     NSAttributedString.Key.font: entryLabelFont ?? valueFont,
-                                    NSAttributedString.Key.foregroundColor: entryLabelColor ?? valueTextColor]
-                            )
+                                    NSAttributedString.Key.foregroundColor: entryLabelColor ?? valueTextColor,
+                                ])
                         }
                     }
                     else if drawXInside
@@ -558,8 +555,8 @@ open class PieChartRenderer: DataRenderer
                                 align: .center,
                                 attributes: [
                                     NSAttributedString.Key.font: entryLabelFont ?? valueFont,
-                                    NSAttributedString.Key.foregroundColor: entryLabelColor ?? valueTextColor]
-                            )
+                                    NSAttributedString.Key.foregroundColor: entryLabelColor ?? valueTextColor,
+                                ])
                         }
                     }
                     else if drawYInside
@@ -569,8 +566,7 @@ open class PieChartRenderer: DataRenderer
                             text: valueText,
                             point: CGPoint(x: x, y: y + lineHeight / 2.0),
                             align: .center,
-                            attributes: [NSAttributedString.Key.font: valueFont, NSAttributedString.Key.foregroundColor: valueTextColor]
-                        )
+                            attributes: [NSAttributedString.Key.font: valueFont, NSAttributedString.Key.foregroundColor: valueTextColor])
                     }
                 }
 
@@ -594,7 +590,7 @@ open class PieChartRenderer: DataRenderer
         }
     }
 
-    open override func drawExtras(context: CGContext)
+    override open func drawExtras(context: CGContext)
     {
         drawHole(context: context)
         drawCenterText(context: context)
@@ -626,8 +622,8 @@ open class PieChartRenderer: DataRenderer
             // only draw the circle if it can be seen (not covered by the hole)
             if let transparentCircleColor = chart.transparentCircleColor
             {
-                if transparentCircleColor != NSUIColor.clear &&
-                    chart.transparentCircleRadiusPercent > chart.holeRadiusPercent
+                if transparentCircleColor != NSUIColor.clear,
+                   chart.transparentCircleRadiusPercent > chart.holeRadiusPercent
                 {
                     let alpha = animator.phaseX * animator.phaseY
                     let secondHoleRadius = radius * chart.transparentCircleRadiusPercent
@@ -662,9 +658,9 @@ open class PieChartRenderer: DataRenderer
         guard
             let chart = chart,
             let centerAttributedText = chart.centerAttributedText
-            else { return }
+        else { return }
 
-        if chart.drawCenterTextEnabled && centerAttributedText.length > 0
+        if chart.drawCenterTextEnabled, centerAttributedText.length > 0
         {
             let center = chart.centerCircleBox
             let offset = chart.centerTextOffset
@@ -705,12 +701,12 @@ open class PieChartRenderer: DataRenderer
         }
     }
 
-    open override func drawHighlighted(context: CGContext, indices: [Highlight])
+    override open func drawHighlighted(context: CGContext, indices: [Highlight])
     {
         guard
             let chart = chart,
             let data = chart.data
-            else { return }
+        else { return }
 
         context.saveGState()
 
@@ -740,7 +736,7 @@ open class PieChartRenderer: DataRenderer
             }
 
             guard let set = data.getDataSetByIndex(indices[i].dataSetIndex) as? IPieChartDataSet else { continue }
-            
+
             if !set.isHighlightEnabled { continue }
 
             let entryCount = set.entryCount
@@ -748,7 +744,7 @@ open class PieChartRenderer: DataRenderer
             for j in 0 ..< entryCount
             {
                 guard let e = set.entryForIndex(j) else { continue }
-                if ((abs(e.y) > Double.ulpOfOne))
+                if abs(e.y) > Double.ulpOfOne
                 {
                     visibleAngleCount += 1
                 }
@@ -818,8 +814,8 @@ open class PieChartRenderer: DataRenderer
                     sweepAngle: sweepAngleOuter)
             }
 
-            if drawInnerArc &&
-                (innerRadius > 0.0 || accountForSliceSpacing)
+            if drawInnerArc,
+               innerRadius > 0.0 || accountForSliceSpacing
             {
                 if accountForSliceSpacing
                 {
@@ -880,7 +876,7 @@ open class PieChartRenderer: DataRenderer
             let axElement = createAccessibleElement(withIndex: index,
                                                     container: chart,
                                                     dataSet: set)
-            { (element) in
+            { element in
                 element.accessibilityFrame = path.boundingBoxOfPath
                 element.isSelected = true
             }
@@ -890,7 +886,8 @@ open class PieChartRenderer: DataRenderer
 
         // Prepend selected slices before the already rendered unselected ones.
         // NOTE: - This relies on drawDataSet() being called before drawHighlighted in PieChartView.
-        if !accessibleChartElements.isEmpty {
+        if !accessibleChartElements.isEmpty
+        {
             accessibleChartElements.insert(contentsOf: highlightedAccessibleElements, at: 1)
         }
 
@@ -902,8 +899,8 @@ open class PieChartRenderer: DataRenderer
     private func createAccessibleElement(withIndex idx: Int,
                                          container: PieChartView,
                                          dataSet: IPieChartDataSet,
-                                         modifier: (NSUIAccessibilityElement) -> ()) -> NSUIAccessibilityElement {
-
+                                         modifier: (NSUIAccessibilityElement) -> ()) -> NSUIAccessibilityElement
+    {
         let element = NSUIAccessibilityElement(accessibilityContainer: container)
 
         guard let e = dataSet.entryForIndex(idx) else { return element }
@@ -916,7 +913,8 @@ open class PieChartRenderer: DataRenderer
             dataSetIndex: idx,
             viewPortHandler: viewPortHandler)
 
-        if container.usePercentValuesEnabled {
+        if container.usePercentValuesEnabled
+        {
             let value = e.y / data.yValueSum * 100.0
             let valueText = formatter.stringForValue(
                 value,
@@ -931,7 +929,7 @@ open class PieChartRenderer: DataRenderer
         let isCount = data.accessibilityEntryLabelSuffixIsCount
         let prefix = data.accessibilityEntryLabelPrefix?.appending("\(idx + 1)") ?? pieChartDataEntry?.label ?? ""
         let suffix = data.accessibilityEntryLabelSuffix ?? ""
-        element.accessibilityLabel = "\(prefix) : \(elementValueText) \(suffix  + (isCount ? (e.y == 1.0 ? "" : "s") : "") )"
+        element.accessibilityLabel = "\(prefix) : \(elementValueText) \(suffix + (isCount ? (e.y == 1.0 ? "" : "s") : ""))"
 
         // The modifier allows changing of traits and frame depending on highlight, rotation, etc
         modifier(element)
