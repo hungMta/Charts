@@ -404,7 +404,7 @@ open class PieChartRenderer: DataRenderer
                     valueTextColor = .gray
                     entryLabelColor = .gray
                 }
-                
+
                 if drawXOutside || drawYOutside
                 {
                     let valueLineLength1 = dataSet.valueLinePart1Length
@@ -533,7 +533,7 @@ open class PieChartRenderer: DataRenderer
                         ChartUtils.drawText(
                             context: context,
                             text: valueText,
-                            point: CGPoint(x: x, y: y),
+                            point: CGPoint(x: x, y: y + lineHeight),
                             align: .center,
                             attributes: [NSAttributedString.Key.font: customFont, NSAttributedString.Key.foregroundColor: valueTextColor])
 
@@ -542,7 +542,7 @@ open class PieChartRenderer: DataRenderer
                             ChartUtils.drawText(
                                 context: context,
                                 text: pe!.label!,
-                                point: CGPoint(x: x, y: y + lineHeight),
+                                point: CGPoint(x: x, y: y),
                                 align: .center,
                                 attributes: [
                                     NSAttributedString.Key.font: customFont,
