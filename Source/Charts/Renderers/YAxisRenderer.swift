@@ -146,7 +146,11 @@ open class YAxisRenderer: AxisRendererBase
         
         for i in stride(from: from, to: to, by: 1)
         {
-            let text = yAxis.getFormattedLabel(i)
+            var text = yAxis.getFormattedLabel(i)
+            let largeNumber = Double(text) ?? 0
+            let numberFormatter = NumberFormatter()
+            numberFormatter.numberStyle = .decimal
+            text = numberFormatter.string(from: NSNumber(value:largeNumber)) ?? text
             
             ChartUtils.drawText(
                 context: context,
