@@ -508,7 +508,8 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                 let isInverted = dataProvider.isInverted(axis: dataSet.axisDependency)
                 
                 // calculate the correct offset depending on the draw position of the value
-                let valueFont = dataSet.valueFont
+                var valueFont = dataSet.valueFont
+                valueFont = UIFont.systemFont(ofSize: 10)
                 let valueTextHeight = valueFont.lineHeight
                 posOffset = (drawValueAboveBar ? -(valueTextHeight + valueOffsetPlus) : valueOffsetPlus)
                 negOffset = (drawValueAboveBar ? valueOffsetPlus : -(valueTextHeight + valueOffsetPlus))
